@@ -4,7 +4,17 @@ import { removeCar } from "../store";
 
 function CarList() {
   const dispatch = useDispatch();
-  const carsList = useSelector((state) => state.cars.data);
+  const { cars, name } = useSelector(({ form, cars: { data, searchTerm } }) => {
+    
+    const filteredCars = data.filter((car) =>
+      car.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return {
+      cars: filteredCars,
+      name: form.name,
+    };
+  });
 
   const handleCarDelete = (car) => {
     dispatch(removeCar(car.id));
@@ -13,9 +23,11 @@ function CarList() {
   const renderCarList = () => {
     return (
       <>
-        {carsList.map((car) => {
+        {cars.map((car) => {
+          const isBold =
+            name && car.name.toLowerCase().includes(name.toLowerCase());
           return (
-            <div key={car.id} className="panel">
+            <div key={car.id} className={`panel ${isBold && 'bold'}`}>
               <p>
                 {car.name} - ${car.cost}
               </p>
